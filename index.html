@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Figurinha Secreta #33</title>
+<style>
+body{margin:0;font-family:Arial,sans-serif;background:linear-gradient(135deg,#081426,#0f2747);color:#fff;overflow:hidden}
+.screen{display:none;height:100vh;justify-content:center;align-items:center;text-align:center;padding:20px;box-sizing:border-box}
+.active{display:flex;flex-direction:column}
+.card{max-width:800px;background:rgba(255,255,255,.08);padding:30px;border-radius:20px;backdrop-filter:blur(8px)}
+h1,h2{color:#ffd700}
+button{padding:12px 24px;border:none;border-radius:30px;font-size:18px;cursor:pointer;margin:10px}
+.yes{background:#ffd700}
+.no{background:#ff6b6b;position:relative}
+#message{min-height:40px}
+#slideshow img{max-width:90%;max-height:50vh;border-radius:15px;border:4px solid gold}
+.countdown{font-size:2rem;font-weight:bold}
+#musicBtn{position:fixed;top:10px;right:10px}
+canvas{position:fixed;inset:0;pointer-events:none}
+</style>
+</head>
+<body>
+<canvas id="fx"></canvas>
+<button id="musicBtn">🎵 Música</button>
+
+<div id="s1" class="screen active"><div class="card">
+<h1>🔓 FIGURINHA SECRETA DESBLOQUEADA</h1>
+<p>Parabéns, Yasmin. Você encontrou a figurinha mais rara de todo o álbum.</p>
+<button onclick="next(2)">Continuar</button></div></div>
+
+<div id="s2" class="screen"><div class="card">
+<h1>Bem-vinda à próxima fase</h1>
+<p>Você está prestes a descobrir algo muito especial.</p>
+<button onclick="next(3)">Continuar</button></div></div>
+
+<div id="s3" class="screen"><div class="card">
+<h2>Yasmin Belo, você está pronta para desbloquear a próxima fase do nosso relacionamento?</h2>
+<div id="message"></div>
+<button class="yes" onclick="next(4)">❤️ SIM</button>
+<button class="no" id="noBtn">😅 NÃO</button>
+</div></div>
+
+<div id="s4" class="screen"><div class="card">
+<h1>🏆 CONQUISTA DESBLOQUEADA</h1>
+<div id="slideshow"><img id="slide" src="https://via.placeholder.com/800x500?text=Adicione+sua+foto+1"></div>
+<p>Todas as páginas deste álbum contam a nossa história até hoje.<br><br>
+Cada foto, cada lembrança e cada figurinha representam momentos que construímos juntos.<br><br>
+Mas a verdade é que a parte mais bonita da nossa história ainda está por vir.<br><br>
+E eu quero continuar escrevendo cada capítulo ao seu lado.</p>
+<button onclick="next(5)">Ver Próxima Missão</button></div></div>
+
+<div id="s5" class="screen"><div class="card">
+<h1>NOVA MISSÃO DESBLOQUEADA</h1>
+<p>✅ Capítulo 1 - Nosso Encontro</p>
+<p>✅ Capítulo 2 - Nossa História</p>
+<p>✅ Capítulo 3 - Superando a Distância</p>
+<p>✨ Capítulo 4 - Próxima Fase</p>
+<button onclick="next(6)">Revelar</button></div></div>
+
+<div id="s6" class="screen"><div class="card">
+<h1>SAVE THE DATE</h1>
+<h2>15 DE AGOSTO DE 2026</h2>
+<p>Reserve esta data.<br>Um momento muito especial está chegando.<br>Prepare seu sorriso mais bonito.<br>O próximo capítulo da nossa história será inesquecível.</p>
+<div class="countdown" id="countdown"></div>
+<h3>Misael ❤️ Yasmin</h3>
+<p id="final"></p>
+<button onclick="location.reload()">Reiniciar</button></div></div>
+
+<audio id="bgm" loop>
+<source src="audio/lembrei-de-nos.mp3" type="audio/mpeg">
+</audio>
+
+<script>
+const photos=[
+"images/foto1.jpg",
+"images/foto2.jpg",
+"images/foto3.jpg",
+"images/foto4.jpg",
+"images/foto5.jpg"
+];
+
+function next(n){
+ document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+ document.getElementById('s'+n).classList.add('active');
+ if(n===4) startSlides();
+ if(n===6) typeFinal();
+}
+
+const msgs=[
+"Resposta inválida.",
+"Essa opção está temporariamente indisponível.",
+"O desenvolvedor removeu essa funcionalidade.",
+"Preta, tenta outra opção 😂",
+"O sistema recomenda clicar em SIM."
+];
+
+const noBtn=document.getElementById("noBtn");
+noBtn.addEventListener("mouseover",()=>{
+ const x=Math.random()*300-150;
+ const y=Math.random()*200-100;
+ noBtn.style.transform=`translate(${x}px,${y}px)`;
+ document.getElementById("message").innerText=msgs[Math.floor(Math.random()*msgs.length)];
+});
+
+let idx=0;
+function startSlides(){
+ const img=document.getElementById("slide");
+ setInterval(()=>{
+   idx=(idx+1)%photos.length;
+   img.src=photos[idx];
+ },3000);
+}
+
+const target=new Date("2026-08-15T00:00:00");
+setInterval(()=>{
+ const d=target-new Date();
+ const days=Math.max(0,Math.floor(d/86400000));
+ document.getElementById("countdown").innerText=days+" dias restantes";
+},1000);
+
+function typeFinal(){
+ const txt="Yasmin Belo... Mal posso esperar pelo dia 15 de agosto ❤️";
+ let i=0;
+ const el=document.getElementById("final");
+ const t=setInterval(()=>{
+   el.textContent+=txt[i++]||"";
+   if(i>txt.length) clearInterval(t);
+ },60);
+}
+
+document.getElementById("musicBtn").onclick=()=>{
+ const a=document.getElementById("bgm");
+ if(a.paused){a.play();} else {a.pause();}
+};
+
+const c=document.getElementById("fx"),ctx=c.getContext("2d");
+function resize(){c.width=innerWidth;c.height=innerHeight} resize(); onresize=resize;
+let p=[...Array(80)].map(()=>({x:Math.random()*innerWidth,y:Math.random()*innerHeight,r:Math.random()*3+1}));
+(function anim(){
+ ctx.clearRect(0,0,c.width,c.height);
+ p.forEach(o=>{ctx.beginPath();ctx.arc(o.x,o.y,o.r,0,6.28);ctx.fillStyle="gold";ctx.fill();o.y-=0.5;if(o.y<0)o.y=innerHeight;});
+ requestAnimationFrame(anim);
+})();
+</script>
+</body>
+</html>
