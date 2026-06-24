@@ -2,145 +2,1006 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Figurinha Secreta #33</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Figurinha Lendária #33 — Yasmin Belo dos Santos Ramos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+
 <style>
-body{margin:0;font-family:Arial,sans-serif;background:linear-gradient(135deg,#081426,#0f2747);color:#fff;overflow:hidden}
-.screen{display:none;height:100vh;justify-content:center;align-items:center;text-align:center;padding:20px;box-sizing:border-box}
-.active{display:flex;flex-direction:column}
-.card{max-width:800px;background:rgba(255,255,255,.08);padding:30px;border-radius:20px;backdrop-filter:blur(8px)}
-h1,h2{color:#ffd700}
-button{padding:12px 24px;border:none;border-radius:30px;font-size:18px;cursor:pointer;margin:10px}
-.yes{background:#ffd700}
-.no{background:#ff6b6b;position:relative}
-#message{min-height:40px}
-#slideshow img{max-width:90%;max-height:50vh;border-radius:15px;border:4px solid gold}
-.countdown{font-size:2rem;font-weight:bold}
-#musicBtn{position:fixed;top:10px;right:10px}
-canvas{position:fixed;inset:0;pointer-events:none}
+/* ============================================================
+   BASE
+============================================================ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --navy:   #081426;
+  --navy2:  #0f2747;
+  --gold:   #ffd700;
+  --gold2:  #b8860b;
+  --gold3:  #fff0a0;
+  --cream:  #f5f0e8;
+  --text:   #e8dfc8;
+  --white:  #ffffff;
+}
+
+html, body {
+  height: 100%; width: 100%;
+  overflow: hidden;
+  background: var(--navy);
+  color: var(--text);
+}
+
+/* ============================================================
+   CANVAS PARTÍCULAS
+============================================================ */
+#fx { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
+
+/* ============================================================
+   BOTÃO MÚSICA
+============================================================ */
+#musicBtn {
+  position: fixed; top: 14px; right: 14px; z-index: 1000;
+  background: rgba(255,215,0,0.15);
+  border: 1px solid rgba(255,215,0,0.4);
+  color: var(--gold);
+  font-family: 'Montserrat', sans-serif;
+  font-size: 12px; letter-spacing: 0.05em;
+  padding: 8px 14px; border-radius: 99px;
+  cursor: pointer; backdrop-filter: blur(8px);
+  transition: background .2s;
+}
+#musicBtn:hover { background: rgba(255,215,0,0.28); }
+
+/* ============================================================
+   SCREENS
+============================================================ */
+.screen {
+  display: none;
+  position: fixed; inset: 0; z-index: 10;
+  justify-content: center; align-items: center;
+  padding: 20px;
+  opacity: 0;
+  transition: opacity .6s ease;
+}
+.screen.active { display: flex; flex-direction: column; }
+.screen.visible { opacity: 1; }
+
+/* ============================================================
+   LOADING
+============================================================ */
+#s0 { background: var(--navy); flex-direction: column; gap: 20px; }
+.loading-logo {
+  font-family: 'Cinzel', serif;
+  font-size: clamp(13px, 3vw, 18px);
+  letter-spacing: 0.3em;
+  color: var(--gold);
+  text-transform: uppercase;
+  opacity: 0;
+  animation: fadeInUp 1s ease 0.5s forwards;
+}
+.loading-bar-wrap {
+  width: min(300px, 80vw);
+  height: 2px;
+  background: rgba(255,215,0,0.15);
+  border-radius: 2px;
+  overflow: hidden;
+  opacity: 0;
+  animation: fadeInUp 1s ease 1s forwards;
+}
+.loading-bar {
+  height: 100%; width: 0%; background: var(--gold);
+  animation: loadBar 2.5s ease 1.2s forwards;
+}
+.loading-sub {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(14px, 3vw, 18px);
+  color: rgba(255,215,0,0.6);
+  font-style: italic;
+  letter-spacing: 0.1em;
+  opacity: 0;
+  animation: fadeInUp 1s ease 1.5s forwards;
+}
+@keyframes loadBar { to { width: 100%; } }
+@keyframes fadeInUp { from { opacity:0; transform: translateY(12px); } to { opacity:1; transform: translateY(0); } }
+
+/* ============================================================
+   CARD BASE
+============================================================ */
+.card {
+  max-width: 700px; width: 100%;
+  background: linear-gradient(145deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
+  border: 1px solid rgba(255,215,0,0.25);
+  border-radius: 20px;
+  padding: clamp(24px, 5vw, 48px);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 0 60px rgba(255,215,0,0.06), inset 0 1px 0 rgba(255,215,0,0.15);
+  text-align: center;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+/* scrollbar discreta */
+.card::-webkit-scrollbar { width: 4px; }
+.card::-webkit-scrollbar-track { background: transparent; }
+.card::-webkit-scrollbar-thumb { background: rgba(255,215,0,0.2); border-radius: 2px; }
+
+.gold-line {
+  width: 60px; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  margin: 16px auto;
+}
+
+/* ============================================================
+   TIPOGRAFIA
+============================================================ */
+.t-epic {
+  font-family: 'Cinzel', serif;
+  font-size: clamp(18px, 5vw, 32px);
+  font-weight: 900;
+  color: var(--gold);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  line-height: 1.2;
+  text-shadow: 0 0 30px rgba(255,215,0,0.4);
+}
+.t-sub {
+  font-family: 'Cinzel', serif;
+  font-size: clamp(12px, 2.5vw, 16px);
+  color: rgba(255,215,0,0.7);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+.t-body {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(16px, 3vw, 22px);
+  font-weight: 300;
+  color: var(--cream);
+  line-height: 1.8;
+}
+.t-italic {
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-size: clamp(15px, 2.8vw, 20px);
+  color: rgba(232,223,200,0.8);
+  line-height: 1.8;
+}
+
+/* ============================================================
+   FIGURINHA LENDÁRIA (S1)
+============================================================ */
+.sticker-wrap {
+  position: relative;
+  width: min(200px, 50vw);
+  margin: 0 auto 20px;
+}
+.sticker-card {
+  width: 100%;
+  aspect-ratio: 3/4;
+  background: linear-gradient(145deg, #1a3a6c, #0f2747);
+  border: 3px solid var(--gold);
+  border-radius: 12px;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 0 40px rgba(255,215,0,0.3);
+  animation: shimmer 3s ease-in-out infinite;
+}
+.sticker-card::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(135deg, transparent 40%, rgba(255,255,255,0.08) 50%, transparent 60%);
+  animation: shine 2.5s ease-in-out infinite;
+}
+.sticker-num {
+  font-family: 'Cinzel', serif;
+  font-size: clamp(10px, 2vw, 13px);
+  color: rgba(255,215,0,0.6);
+  letter-spacing: 0.2em;
+  position: absolute; top: 10px;
+}
+.sticker-heart { font-size: clamp(40px, 12vw, 70px); z-index: 1; }
+.sticker-name {
+  font-family: 'Cinzel', serif;
+  font-size: clamp(9px, 2vw, 12px);
+  color: var(--gold);
+  letter-spacing: 0.15em;
+  position: absolute; bottom: 10px;
+  text-transform: uppercase;
+}
+.badge-lendaria {
+  position: absolute; top: -12px; right: -12px;
+  background: var(--gold);
+  color: var(--navy);
+  font-family: 'Cinzel', serif;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  padding: 4px 8px;
+  border-radius: 99px;
+  box-shadow: 0 2px 10px rgba(255,215,0,0.5);
+}
+@keyframes shimmer {
+  0%,100% { box-shadow: 0 0 30px rgba(255,215,0,0.2); }
+  50%      { box-shadow: 0 0 60px rgba(255,215,0,0.5), 0 0 100px rgba(255,215,0,0.2); }
+}
+@keyframes shine {
+  0%   { transform: translateX(-150%) rotate(45deg); }
+  100% { transform: translateX(300%) rotate(45deg); }
+}
+
+/* ============================================================
+   BOTÕES
+============================================================ */
+.btn {
+  font-family: 'Montserrat', sans-serif;
+  font-size: clamp(13px, 2.5vw, 15px);
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 14px 36px;
+  border: none; border-radius: 99px;
+  cursor: pointer;
+  transition: transform .2s, box-shadow .2s;
+  margin: 8px;
+}
+.btn:hover { transform: translateY(-2px); }
+.btn-gold {
+  background: linear-gradient(135deg, var(--gold), #e6b800);
+  color: var(--navy);
+  box-shadow: 0 4px 20px rgba(255,215,0,0.35);
+}
+.btn-gold:hover { box-shadow: 0 8px 30px rgba(255,215,0,0.5); }
+.btn-outline {
+  background: transparent;
+  border: 1px solid rgba(255,215,0,0.4);
+  color: var(--gold);
+}
+.btn-outline:hover { background: rgba(255,215,0,0.08); }
+.btn-yes {
+  background: linear-gradient(135deg, #27ae60, #1e8449);
+  color: #fff;
+  box-shadow: 0 4px 20px rgba(39,174,96,0.35);
+  font-size: clamp(15px, 3vw, 18px);
+  padding: 16px 40px;
+}
+.btn-no {
+  background: rgba(231,76,60,0.2);
+  border: 1px solid rgba(231,76,60,0.4);
+  color: #e74c3c;
+  font-size: clamp(13px, 2.5vw, 15px);
+  padding: 14px 32px;
+  position: relative;
+  transition: transform .15s ease;
+}
+
+/* ============================================================
+   TELA 3 — mensagem fugitiva
+============================================================ */
+#noMsg {
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-size: clamp(14px, 2.8vw, 18px);
+  color: rgba(255,215,0,0.7);
+  min-height: 28px;
+  margin: 12px 0;
+  opacity: 0;
+  transition: opacity .3s;
+}
+#noMsg.show { opacity: 1; }
+
+/* ============================================================
+   SLIDESHOW (S4)
+============================================================ */
+.slide-frame {
+  width: min(480px, 90vw);
+  aspect-ratio: 4/3;
+  margin: 0 auto 20px;
+  border: 3px solid var(--gold);
+  border-radius: 12px;
+  overflow: hidden;
+  position: relative;
+  box-shadow: 0 0 40px rgba(255,215,0,0.2), 8px 8px 0 rgba(0,0,0,0.3);
+  background: #0a1c35;
+}
+.slide-frame::before {
+  content: 'ÁLBUM PANINI PREMIUM';
+  position: absolute; top: 8px; left: 50%; transform: translateX(-50%);
+  font-family: 'Cinzel', serif; font-size: 9px; letter-spacing: 0.2em;
+  color: rgba(255,215,0,0.5); z-index: 2;
+}
+.slide-frame img {
+  width: 100%; height: 100%; object-fit: cover;
+  position: absolute; inset: 0;
+  opacity: 0; transition: opacity .8s ease;
+}
+.slide-frame img.slide-active { opacity: 1; }
+.slide-dots {
+  display: flex; gap: 8px; justify-content: center; margin-bottom: 16px;
+}
+.slide-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: rgba(255,215,0,0.25);
+  transition: background .3s;
+}
+.slide-dot.active { background: var(--gold); }
+
+/* ============================================================
+   TIMELINE (S5)
+============================================================ */
+.timeline { text-align: left; margin: 20px 0; }
+.tl-item {
+  display: flex; align-items: flex-start; gap: 16px;
+  padding: 14px 0;
+  border-bottom: 1px solid rgba(255,215,0,0.1);
+  cursor: pointer;
+  transition: opacity .2s;
+}
+.tl-item:last-child { border-bottom: none; }
+.tl-dot {
+  width: 36px; height: 36px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px; flex-shrink: 0;
+  border: 2px solid rgba(255,215,0,0.3);
+}
+.tl-content { flex: 1; }
+.tl-year {
+  font-family: 'Cinzel', serif; font-size: 11px;
+  letter-spacing: 0.2em; color: rgba(255,215,0,0.6);
+  text-transform: uppercase; margin-bottom: 4px;
+}
+.tl-title {
+  font-family: 'Cormorant Garamond', serif; font-size: 18px;
+  color: var(--cream);
+}
+.tl-item.locked .tl-title { color: rgba(255,255,255,0.3); }
+.tl-item.locked .tl-dot { border-color: rgba(255,255,255,0.1); }
+.tl-item.blink .tl-dot { animation: blinkGold 1.2s ease-in-out infinite; }
+@keyframes blinkGold {
+  0%,100% { background: transparent; box-shadow: none; }
+  50% { background: rgba(255,215,0,0.2); box-shadow: 0 0 20px rgba(255,215,0,0.4); }
+}
+
+/* ============================================================
+   CARTA (S7)
+============================================================ */
+.envelope-wrap { position: relative; margin: 10px auto 20px; width: min(260px, 70vw); }
+.envelope {
+  width: 100%;
+  aspect-ratio: 3/2;
+  background: linear-gradient(145deg, #f5f0e8, #e8dfc8);
+  border-radius: 4px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.4), 0 0 30px rgba(255,215,0,0.15);
+  border: 1px solid rgba(255,215,0,0.3);
+}
+.envelope-flap {
+  position: absolute; top: 0; left: 0; right: 0;
+  height: 50%;
+  background: linear-gradient(180deg, #e8dfc8, #d4c9a8);
+  clip-path: polygon(0 0, 100% 0, 50% 85%);
+  transition: transform .6s ease;
+  transform-origin: top center;
+}
+.envelope-body {
+  position: absolute; bottom: 0; left: 0; right: 0; height: 55%;
+  background: linear-gradient(0deg, #e0d5bc, #ece5cf);
+}
+.envelope-seal {
+  position: absolute; top: 38%; left: 50%; transform: translate(-50%,-50%);
+  width: 44px; height: 44px; border-radius: 50%;
+  background: radial-gradient(circle, var(--gold), #c8960c);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; z-index: 3;
+  box-shadow: 0 2px 12px rgba(255,215,0,0.4);
+  transition: transform .4s ease, opacity .4s ease;
+}
+.envelope-lines {
+  position: absolute; bottom: 12%; left: 15%; right: 15%;
+  display: flex; flex-direction: column; gap: 6px;
+}
+.e-line { height: 1.5px; background: rgba(100,80,40,0.15); border-radius: 1px; }
+
+.letter-paper {
+  display: none;
+  background: linear-gradient(180deg, #faf7f0, #f0ebe0);
+  border: 1px solid rgba(200,170,100,0.3);
+  border-radius: 4px;
+  padding: 28px;
+  text-align: left;
+  margin-top: 12px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+  position: relative;
+  max-height: 45vh;
+  overflow-y: auto;
+}
+.letter-paper::before {
+  content: '';
+  position: absolute; top: 0; left: 40px;
+  width: 1px; height: 100%;
+  background: rgba(200,150,150,0.2);
+}
+.letter-paper p {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(15px, 2.8vw, 19px);
+  color: #3a2e1a;
+  line-height: 1.9;
+  margin-bottom: 16px;
+}
+.letter-paper .signature {
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-size: clamp(16px, 3vw, 21px);
+  color: #5a3e1a;
+  text-align: right;
+  margin-top: 20px;
+}
+#letterBtn {
+  position: fixed; bottom: 16px; left: 16px; z-index: 1000;
+  display: none;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 12px; padding: 8px 14px;
+  background: rgba(255,215,0,0.15);
+  border: 1px solid rgba(255,215,0,0.3);
+  color: var(--gold); border-radius: 99px;
+  cursor: pointer; backdrop-filter: blur(8px);
+}
+
+/* ============================================================
+   CONQUISTA (S4 overlay)
+============================================================ */
+.trophy-anim {
+  font-size: clamp(50px, 15vw, 90px);
+  animation: trophyPop 0.6s cubic-bezier(0.175,0.885,0.32,1.275) both;
+}
+@keyframes trophyPop {
+  from { transform: scale(0) rotate(-20deg); opacity: 0; }
+  to   { transform: scale(1) rotate(0deg); opacity: 1; }
+}
+
+/* ============================================================
+   SAVE THE DATE (S6)
+============================================================ */
+.std-date {
+  font-family: 'Cinzel', serif;
+  font-size: clamp(32px, 10vw, 72px);
+  font-weight: 900;
+  color: var(--gold);
+  text-shadow: 0 0 40px rgba(255,215,0,0.5), 0 0 80px rgba(255,215,0,0.2);
+  letter-spacing: 0.05em;
+  line-height: 1;
+  margin: 8px 0;
+}
+.countdown-grid {
+  display: flex; gap: clamp(10px, 3vw, 20px);
+  justify-content: center; margin: 20px 0;
+}
+.cd-block {
+  background: rgba(255,215,0,0.08);
+  border: 1px solid rgba(255,215,0,0.2);
+  border-radius: 12px;
+  padding: 12px 16px;
+  min-width: clamp(60px, 15vw, 80px);
+}
+.cd-num {
+  font-family: 'Cinzel', serif;
+  font-size: clamp(22px, 6vw, 40px);
+  font-weight: 700;
+  color: var(--gold);
+  line-height: 1;
+}
+.cd-label {
+  font-family: 'Montserrat', sans-serif;
+  font-size: clamp(8px, 1.5vw, 10px);
+  letter-spacing: 0.15em;
+  color: rgba(255,215,0,0.5);
+  text-transform: uppercase;
+  margin-top: 4px;
+}
+.std-assinatura {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(18px, 4vw, 28px);
+  font-style: italic;
+  color: var(--gold);
+  margin: 12px 0;
+}
+#typewriter {
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-size: clamp(15px, 3vw, 20px);
+  color: var(--gold3);
+  min-height: 60px;
+  text-shadow: 0 0 20px rgba(255,215,0,0.4);
+  line-height: 1.6;
+  margin-top: 16px;
+}
+
+/* ============================================================
+   RESPONSIVO
+============================================================ */
+@media (max-width: 480px) {
+  .card { padding: 20px 16px; }
+  .btn { padding: 12px 24px; }
+}
 </style>
 </head>
 <body>
+
 <canvas id="fx"></canvas>
 <button id="musicBtn">🎵 Música</button>
+<button id="letterBtn" onclick="openLetter()">📩 Abrir Carta</button>
 
-<div id="s1" class="screen active"><div class="card">
-<h1>🔓 FIGURINHA SECRETA DESBLOQUEADA</h1>
-<p>Parabéns, Yasmin. Você encontrou a figurinha mais rara de todo o álbum.</p>
-<button onclick="next(2)">Continuar</button></div></div>
+<!-- ==================== LOADING ==================== -->
+<div id="s0" class="screen active">
+  <div class="loading-logo">Álbum Panini Premium — Edição Especial</div>
+  <div class="loading-bar-wrap"><div class="loading-bar"></div></div>
+  <div class="loading-sub">Carregando figurinha lendária...</div>
+</div>
 
-<div id="s2" class="screen"><div class="card">
-<h1>Bem-vinda à próxima fase</h1>
-<p>Você está prestes a descobrir algo muito especial.</p>
-<button onclick="next(3)">Continuar</button></div></div>
+<!-- ==================== S1 — FIGURINHA ==================== -->
+<div id="s1" class="screen">
+  <div class="card">
+    <div class="t-sub" style="margin-bottom:16px">✦ Álbum Especial — Edição Limitada ✦</div>
+    <div class="sticker-wrap">
+      <div class="sticker-card">
+        <div class="sticker-num"># 33</div>
+        <div class="sticker-heart">❤️</div>
+        <div class="sticker-name">Yasmin Belo</div>
+      </div>
+      <div class="badge-lendaria">LENDÁRIA</div>
+    </div>
+    <div class="t-epic" style="margin-bottom:8px">🔓 Figurinha Secreta Desbloqueada</div>
+    <div class="gold-line"></div>
+    <p class="t-body">Parabéns!!!<br>Você completou o album e liberou a figurinha mais especial de todo o álbum.</p>
+    <br>
+    <button class="btn btn-gold" onclick="go(2)">Continuar</button>
+  </div>
+</div>
 
-<div id="s3" class="screen"><div class="card">
-<h2>Yasmin Belo, você está pronta para desbloquear a próxima fase do nosso relacionamento?</h2>
-<div id="message"></div>
-<button class="yes" onclick="next(4)">❤️ SIM</button>
-<button class="no" id="noBtn">😅 NÃO</button>
-</div></div>
+<!-- ==================== S2 ==================== -->
+<div id="s2" class="screen">
+  <div class="card">
+    <div class="t-sub" style="margin-bottom:16px">✦ Nova Fase ✦</div>
+    <div class="t-epic">Bem-vinda à próxima fase</div>
+    <div class="gold-line"></div>
+    <p class="t-body">Você está prestes a descobrir algo muito especial.</p>
+    <br>
+    <p class="t-italic">Cada álbum conta uma história...<br>Este conta a nossa.</p>
+    <br>
+    <button class="btn btn-gold" onclick="go(3)">Continuar</button>
+  </div>
+</div>
 
-<div id="s4" class="screen"><div class="card">
-<h1>🏆 CONQUISTA DESBLOQUEADA</h1>
-<div id="slideshow"><img id="slide" src="https://via.placeholder.com/800x500?text=Adicione+sua+foto+1"></div>
-<p>Todas as páginas deste álbum contam a nossa história até hoje.<br><br>
-Cada foto, cada lembrança e cada figurinha representam momentos que construímos juntos.<br><br>
-Mas a verdade é que a parte mais bonita da nossa história ainda está por vir.<br><br>
-E eu quero continuar escrevendo cada capítulo ao seu lado.</p>
-<button onclick="next(5)">Ver Próxima Missão</button></div></div>
+<!-- ==================== S3 — SIM / NÃO ==================== -->
+<div id="s3" class="screen">
+  <div class="card">
+    <div class="t-sub" style="margin-bottom:16px">✦ Pergunta Importante ✦</div>
+    <div class="t-epic" style="font-size:clamp(15px,3.5vw,24px)">Yasmin, você está pronta para desbloquear a próxima fase do nosso relacionamento?</div>
+    <div class="gold-line"></div>
+    <div id="noMsg"></div>
+    <div style="margin-top:16px">
+      <button class="btn btn-yes" onclick="go(4)">❤️ SIM</button>
+      <button class="btn btn-no" id="noBtn">😅 NÃO</button>
+    </div>
+  </div>
+</div>
 
-<div id="s5" class="screen"><div class="card">
-<h1>NOVA MISSÃO DESBLOQUEADA</h1>
-<p>✅ Capítulo 1 - Nosso Encontro</p>
-<p>✅ Capítulo 2 - Nossa História</p>
-<p>✅ Capítulo 3 - Superando a Distância</p>
-<p>✨ Capítulo 4 - Próxima Fase</p>
-<button onclick="next(6)">Revelar</button></div></div>
+<!-- ==================== S4 — CONQUISTA ==================== -->
+<div id="s4" class="screen">
+  <div class="card">
+    <div class="trophy-anim">🏆</div>
+    <div class="t-epic">Conquista Desbloqueada</div>
+    <div class="gold-line"></div>
 
-<div id="s6" class="screen"><div class="card">
-<h1>SAVE THE DATE</h1>
-<h2>15 DE AGOSTO DE 2026</h2>
-<p>Reserve esta data.<br>Um momento muito especial está chegando.<br>Prepare seu sorriso mais bonito.<br>O próximo capítulo da nossa história será inesquecível.</p>
-<div class="countdown" id="countdown"></div>
-<h3>Misael ❤️ Yasmin</h3>
-<p id="final"></p>
-<button onclick="location.reload()">Reiniciar</button></div></div>
+    <div class="slide-frame" id="slideFrame">
+      <!-- imagens inseridas via JS -->
+    </div>
+    <div class="slide-dots" id="slideDots"></div>
+
+    <p class="t-body" style="margin-bottom:12px">
+      Todas as páginas deste álbum contam  uma pequena parte a nossa história até hoje.<br><br>
+      Cada foto, cada lembrança e cada figurinha representam momentos que construímos juntos.<br><br>
+      Mas a verdade é que a parte mais bonita da nossa história ainda está incompleta.<br><br>
+      E eu quero continuar escrevendo cada capítulo ao seu lado.
+    </p>
+    <button class="btn btn-gold" onclick="go(5)">Ver Próxima Missão</button>
+  </div>
+</div>
+
+<!-- ==================== S5 — TIMELINE ==================== -->
+<div id="s5" class="screen">
+  <div class="card">
+    <div class="t-sub" style="margin-bottom:16px">✦ Nova Missão Desbloqueada ✦</div>
+    <div class="t-epic">Nossa Jornada</div>
+    <div class="gold-line"></div>
+    <div class="timeline">
+      <div class="tl-item">
+        <div class="tl-dot" style="background:rgba(52,152,219,0.15)">🩵</div>
+        <div class="tl-content">
+          <div class="tl-year">2024</div>
+          <div class="tl-title">Nosso Primeiro Beijo</div>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot" style="background:rgba(255,215,0,0.1)">💛</div>
+        <div class="tl-content">
+          <div class="tl-year">2025</div>
+          <div class="tl-title">Primeiras Aventuras</div>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot" style="background:rgba(41,128,185,0.15)">💙</div>
+        <div class="tl-content">
+          <div class="tl-year">2026</div>
+          <div class="tl-title">Superando a Distância</div>
+        </div>
+      </div>
+      <div class="tl-item blink">
+        <div class="tl-dot" style="background:rgba(255,215,0,0.08)">✨</div>
+        <div class="tl-content">
+          <div class="tl-year">2026 — Em andamento</div>
+          <div class="tl-title" style="color:var(--gold)">Capítulo 4 — Próxima Fase</div>
+        </div>
+      </div>
+      <div class="tl-item locked" onclick="lockedMsg()">
+        <div class="tl-dot">🔒</div>
+        <div class="tl-content">
+          <div class="tl-year">2027–2028</div>
+          <div class="tl-title">Construindo Sonhos — Coming Soon...</div>
+        </div>
+      </div>
+    </div>
+    <div id="lockedNote" style="font-family:'Cormorant Garamond',serif;font-style:italic;color:rgba(255,215,0,0.6);font-size:15px;min-height:22px;margin-bottom:8px"></div>
+    <button class="btn btn-gold" onclick="go(6)">Revelar</button>
+  </div>
+</div>
+
+<!-- ==================== S6 — SAVE THE DATE ==================== -->
+<div id="s6" class="screen">
+  <div class="card">
+    <div class="t-sub" style="margin-bottom:8px">✦ Missão Desbloqueada ✦</div>
+    <div class="t-epic" style="font-size:clamp(22px,6vw,42px)">Save The Date</div>
+    <div class="std-date">15 DE AGOSTO</div>
+    <div class="t-sub" style="margin-bottom:16px">de 2026</div>
+    <div class="countdown-grid">
+      <div class="cd-block"><div class="cd-num" id="cd-d">--</div><div class="cd-label">Dias</div></div>
+      <div class="cd-block"><div class="cd-num" id="cd-h">--</div><div class="cd-label">Horas</div></div>
+      <div class="cd-block"><div class="cd-num" id="cd-m">--</div><div class="cd-label">Min</div></div>
+      <div class="cd-block"><div class="cd-num" id="cd-s">--</div><div class="cd-label">Seg</div></div>
+    </div>
+    <div class="gold-line"></div>
+    <p class="t-italic">
+      Reserve esta data.<br>
+      Um momento muito especial está chegando.<br>
+      Prepare o meu sorriso favorito no mundo.<br>
+      O próximo capítulo da nossa história será inesquecível.
+    </p>
+    <p class="t-italic" style="margin-top:12px;color:rgba(232,223,200,0.6);font-size:clamp(13px,2.5vw,16px)">
+      Próximo capítulo: uma pergunta muito importante.
+    </p>
+    <div class="std-assinatura">Misael ❤️ Yasmin</div>
+    <div id="typewriter"></div>
+    <br>
+    <button class="btn btn-outline" style="margin-top:8px" onclick="go(7)">Uma última coisa...</button>
+  </div>
+</div>
+
+<!-- ==================== S7 — CARTA ==================== -->
+<div id="s7" class="screen">
+  <div class="card">
+    <div class="t-sub" style="margin-bottom:16px">✦ Para você ✦</div>
+    <div class="t-epic" style="font-size:clamp(16px,4vw,26px)">Uma carta aberta</div>
+    <div class="gold-line"></div>
+    <div class="envelope-wrap" id="envelopeWrap">
+      <div class="envelope" id="envelope">
+        <div class="envelope-flap" id="envFlap"></div>
+        <div class="envelope-body"></div>
+        <div class="envelope-seal" id="envSeal">💌</div>
+        <div class="envelope-lines">
+          <div class="e-line"></div>
+          <div class="e-line" style="width:70%"></div>
+          <div class="e-line" style="width:85%"></div>
+        </div>
+      </div>
+    </div>
+    <p class="t-italic" style="margin-bottom:20px">O conteúdo pode ser emocionante.<br>Escolha o momento certo.</p>
+    <div>
+      <button class="btn btn-gold" id="readNowBtn" onclick="openLetter()">📖 Ler agora</button>
+      <button class="btn btn-outline" onclick="readLater()">🔒 Ler depois</button>
+    </div>
+    <div id="laterMsg" style="display:none;margin-top:16px">
+      <p class="t-italic">Sem problemas ❤️<br>Algumas palavras merecem ser lidas no momento certo.</p>
+      <br>
+      <button class="btn btn-gold" onclick="location.reload()">Reiniciar experiência</button>
+    </div>
+    <div class="letter-paper" id="letterPaper">
+      <p>Yasmin,</p>
+      <p>Quando tive a ideia de montar este álbum, achei que estava apenas reunindo fotos para uma surpresa.</p>
+      <p>Mas, conforme as páginas foram surgindo, percebi que estava revisitando uma parte muito importante das nossas vidas.</p>
+      <p>Cada foto me fez perceber o quanto você passou a ocupar um espaço importante no meu coração.</p>
+      <p>Obrigado por cada conversa, cada risada, cada momento feliz e até pelos desafios que enfrentamos e voce nao soltou minha mao.</p>
+      <p>Eles também fazem parte da nossa história.</p>
+      <p>Hoje enfrentamos um desafio diferente.</p>
+      <p>A distância.</p>
+      <p>E ninguém disse que seria fácil.</p>
+      <p>Dias em que eu gostaria que alguns quilômetros simplesmente deixassem de existir.</p>
+      <p>Ou que pudessemos pular para o futuro </p>
+      <p>Mas existe algo maior do que a distância.</p>
+      <p>A certeza.</p>
+      <p>A certeza de que os sonhos que compartilhamos continuam vivos.</p>
+      <p>O fogo do nosso amor pode estar fraco e quase apagando...</p>
+      <p>Mas ele ainda esta aceso, e isso me da forca para lutar por nós</p>
+      <p>E eu sei que o futuro ainda é incerto, mas enquanto houver chance, eu nao vou desistir de você.</p>
+      <p>E pode ter certeza, se existe algo que este álbum me ensinou, é que as melhores páginas ainda não foram escritas.</p>
+      <p>E, sinceramente, eu mal posso esperar para viver cada uma delas ao seu lado.</p>
+      <div class="signature">Com carinho,<br>seu eterno bê, Misael ❤️</div>
+    </div>
+  </div>
+</div>
 
 <audio id="bgm" loop>
-<source src="audio/lembrei-de-nos.mp3" type="audio/mpeg">
+  <source src="audio/Luan Santana - Tudo que você quiser - (DVD O nosso tempo é hoje).mp3" type="audio/mpeg">
 </audio>
 
 <script>
-const photos=[
-"images/foto1.jpg",
-"images/foto2.jpg",
-"images/foto3.jpg",
-"images/foto4.jpg",
-"images/foto5.jpg"
-];
 
-function next(n){
- document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
- document.getElementById('s'+n).classList.add('active');
- if(n===4) startSlides();
- if(n===6) typeFinal();
+const photos = [
+  "images/foto1.jpeg",
+  "images/foto2.jpeg",
+  "images/foto3.jpeg",
+  "images/foto4.jpeg",
+  "images/foto5.jpeg"
+];
+const backgroundMusic = "audio/Luan Santana - Tudo que você quiser - (DVD O nosso tempo é hoje).mp3";
+const saveTheDate = new Date("2026-08-15T00:00:00");
+
+/* ============================================================
+   NAVEGAÇÃO
+============================================================ */
+let currentScreen = 0;
+let letterOpened = false;
+
+function go(n) {
+  const prev = document.querySelector('.screen.visible');
+  if (prev) {
+    prev.classList.remove('visible');
+    setTimeout(() => prev.classList.remove('active'), 600);
+  }
+  setTimeout(() => {
+    const next = document.getElementById('s' + n);
+    next.classList.add('active');
+    setTimeout(() => next.classList.add('visible'), 30);
+    currentScreen = n;
+    if (n === 4) initSlideshow();
+    if (n === 6) { initCountdown(); setTimeout(startTypewriter, 3000); }
+  }, 300);
 }
 
-const msgs=[
-"Resposta inválida.",
-"Essa opção está temporariamente indisponível.",
-"O desenvolvedor removeu essa funcionalidade.",
-"Preta, tenta outra opção 😂",
-"O sistema recomenda clicar em SIM."
-];
-
-const noBtn=document.getElementById("noBtn");
-noBtn.addEventListener("mouseover",()=>{
- const x=Math.random()*300-150;
- const y=Math.random()*200-100;
- noBtn.style.transform=`translate(${x}px,${y}px)`;
- document.getElementById("message").innerText=msgs[Math.floor(Math.random()*msgs.length)];
+/* ============================================================
+   LOADING
+============================================================ */
+window.addEventListener('load', () => {
+  const s0 = document.getElementById('s0');
+  s0.classList.add('active');
+  setTimeout(() => s0.classList.add('visible'), 30);
+  setTimeout(() => go(1), 4000);
 });
 
-let idx=0;
-function startSlides(){
- const img=document.getElementById("slide");
- setInterval(()=>{
-   idx=(idx+1)%photos.length;
-   img.src=photos[idx];
- },3000);
+/* ============================================================
+   BOTÃO NÃO
+============================================================ */
+const noMsgs = [
+  "Resposta inválida.",
+  "Essa opção está temporariamente indisponível.",
+  "O desenvolvedor(misael) removeu essa funcionalidade.",
+  "Preta, essa opção nao funciona 😂",
+  "opa, acho que voce clicou errado",
+  "O sistema recomenda clicar em SIM.",
+];
+const noBtn = document.getElementById('noBtn');
+const noMsg = document.getElementById('noMsg');
+
+function escapeNo(e) {
+  const card = noBtn.closest('.card');
+  const rect = card.getBoundingClientRect();
+  const btnRect = noBtn.getBoundingClientRect();
+  const maxX = rect.width  - btnRect.width  - 16;
+  const maxY = rect.height - btnRect.height - 16;
+  const rx = Math.random() * maxX;
+  const ry = Math.random() * maxY;
+  noBtn.style.position = 'absolute';
+  noBtn.style.left = rx + 'px';
+  noBtn.style.top  = ry + 'px';
+  card.style.position = 'relative';
+  noMsg.textContent = noMsgs[Math.floor(Math.random() * noMsgs.length)];
+  noMsg.classList.add('show');
+  setTimeout(() => noMsg.classList.remove('show'), 2000);
+}
+noBtn.addEventListener('mouseover', escapeNo);
+noBtn.addEventListener('touchstart', e => { e.preventDefault(); escapeNo(e); }, {passive:false});
+
+/* ============================================================
+   SLIDESHOW
+============================================================ */
+let slideIdx = 0, slideTimer = null;
+
+function initSlideshow() {
+  const frame = document.getElementById('slideFrame');
+  const dots  = document.getElementById('slideDots');
+  frame.innerHTML = '';
+  dots.innerHTML  = '';
+
+  photos.forEach((src, i) => {
+    const img = document.createElement('img');
+    img.src = src;
+    img.alt = `Foto ${i+1}`;
+    if (i === 0) img.classList.add('slide-active');
+    frame.appendChild(img);
+
+    const dot = document.createElement('div');
+    dot.className = 'slide-dot' + (i === 0 ? ' active' : '');
+    dots.appendChild(dot);
+  });
+
+  clearInterval(slideTimer);
+  slideTimer = setInterval(() => {
+    const imgs = frame.querySelectorAll('img');
+    const dts  = dots.querySelectorAll('.slide-dot');
+    imgs[slideIdx].classList.remove('slide-active');
+    dts[slideIdx].classList.remove('active');
+    slideIdx = (slideIdx + 1) % photos.length;
+    imgs[slideIdx].classList.add('slide-active');
+    dts[slideIdx].classList.add('active');
+  }, 3500);
 }
 
-const target=new Date("2026-08-15T00:00:00");
-setInterval(()=>{
- const d=target-new Date();
- const days=Math.max(0,Math.floor(d/86400000));
- document.getElementById("countdown").innerText=days+" dias restantes";
-},1000);
-
-function typeFinal(){
- const txt="Yasmin Belo... Mal posso esperar pelo dia 15 de agosto ❤️";
- let i=0;
- const el=document.getElementById("final");
- const t=setInterval(()=>{
-   el.textContent+=txt[i++]||"";
-   if(i>txt.length) clearInterval(t);
- },60);
+/* ============================================================
+   TIMELINE — item bloqueado
+============================================================ */
+function lockedMsg() {
+  const el = document.getElementById('lockedNote');
+  el.textContent = '🔒 Capítulo ainda não revelado.';
+  setTimeout(() => el.textContent = '', 2500);
 }
 
-document.getElementById("musicBtn").onclick=()=>{
- const a=document.getElementById("bgm");
- if(a.paused){a.play();} else {a.pause();}
+/* ============================================================
+   COUNTDOWN
+============================================================ */
+function initCountdown() {
+  function tick() {
+    const diff = saveTheDate - new Date();
+    if (diff <= 0) {
+      document.getElementById('cd-d').textContent = '0';
+      document.getElementById('cd-h').textContent = '0';
+      document.getElementById('cd-m').textContent = '0';
+      document.getElementById('cd-s').textContent = '0';
+      return;
+    }
+    const d = Math.floor(diff / 86400000);
+    const h = Math.floor((diff % 86400000) / 3600000);
+    const m = Math.floor((diff % 3600000) / 60000);
+    const s = Math.floor((diff % 60000) / 1000);
+    document.getElementById('cd-d').textContent = String(d).padStart(2,'0');
+    document.getElementById('cd-h').textContent = String(h).padStart(2,'0');
+    document.getElementById('cd-m').textContent = String(m).padStart(2,'0');
+    document.getElementById('cd-s').textContent = String(s).padStart(2,'0');
+  }
+  tick();
+  setInterval(tick, 1000);
+}
+
+/* ============================================================
+   TYPEWRITER SAVE THE DATE
+============================================================ */
+function startTypewriter() {
+  const lines = ["Yasmin Belo...", "Mal posso esperar pelo dia 15 de agosto ❤️"];
+  const el = document.getElementById('typewriter');
+  let li = 0, ci = 0;
+  el.textContent = '';
+  function type() {
+    if (li >= lines.length) return;
+    if (ci < lines[li].length) {
+      el.textContent += lines[li][ci++];
+      setTimeout(type, 65);
+    } else {
+      li++;
+      if (li < lines.length) {
+        el.textContent += '\n';
+        ci = 0;
+        setTimeout(type, 900);
+      }
+    }
+  }
+  type();
+}
+
+/* ============================================================
+   CARTA
+============================================================ */
+function openLetter() {
+  const flap   = document.getElementById('envFlap');
+  const seal   = document.getElementById('envSeal');
+  const paper  = document.getElementById('letterPaper');
+  const btns   = document.getElementById('readNowBtn');
+  if (letterOpened) { paper.style.display = 'block'; return; }
+  letterOpened = true;
+  seal.style.opacity = '0';
+  seal.style.transform = 'translate(-50%,-50%) scale(0)';
+  flap.style.transform = 'rotateX(180deg)';
+  setTimeout(() => {
+    paper.style.display = 'block';
+    document.getElementById('letterBtn').style.display = 'none';
+  }, 700);
+  btns.style.display = 'none';
+}
+
+function readLater() {
+  document.getElementById('laterMsg').style.display = 'block';
+  document.getElementById('letterBtn').style.display = 'block';
+  document.querySelector('#s7 .btn-gold').style.display = 'none';
+  document.querySelector('#s7 .btn-outline').style.display = 'none';
+}
+
+/* ============================================================
+   MÚSICA
+============================================================ */
+const bgm = document.getElementById('bgm');
+bgm.src = backgroundMusic;
+bgm.volume = 0.4;
+let musicOn = false;
+
+document.getElementById('musicBtn').onclick = () => {
+  if (musicOn) {
+    bgm.pause(); musicOn = false;
+    document.getElementById('musicBtn').textContent = '🎵 Música';
+  } else {
+    bgm.play().catch(()=>{});
+    musicOn = true;
+    document.getElementById('musicBtn').textContent = '🔇 Silenciar';
+  }
 };
 
-const c=document.getElementById("fx"),ctx=c.getContext("2d");
-function resize(){c.width=innerWidth;c.height=innerHeight} resize(); onresize=resize;
-let p=[...Array(80)].map(()=>({x:Math.random()*innerWidth,y:Math.random()*innerHeight,r:Math.random()*3+1}));
-(function anim(){
- ctx.clearRect(0,0,c.width,c.height);
- p.forEach(o=>{ctx.beginPath();ctx.arc(o.x,o.y,o.r,0,6.28);ctx.fillStyle="gold";ctx.fill();o.y-=0.5;if(o.y<0)o.y=innerHeight;});
- requestAnimationFrame(anim);
+/* ============================================================
+   PARTÍCULAS DOURADAS
+============================================================ */
+const canvas = document.getElementById('fx');
+const ctx    = canvas.getContext('2d');
+
+function resize() { canvas.width = innerWidth; canvas.height = innerHeight; }
+resize(); window.addEventListener('resize', resize);
+
+const particles = Array.from({length: 100}, () => makeParticle());
+
+function makeParticle() {
+  return {
+    x: Math.random() * innerWidth,
+    y: Math.random() * innerHeight,
+    r: Math.random() * 2.5 + 0.5,
+    vx: (Math.random() - 0.5) * 0.3,
+    vy: -Math.random() * 0.6 - 0.2,
+    alpha: Math.random() * 0.6 + 0.2,
+    flicker: Math.random() * Math.PI * 2,
+  };
+}
+
+(function animate() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  particles.forEach(p => {
+    p.flicker += 0.04;
+    const a = p.alpha * (0.7 + 0.3 * Math.sin(p.flicker));
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(255,215,0,${a})`;
+    ctx.fill();
+    p.x += p.vx;
+    p.y += p.vy;
+    if (p.y < -10) { Object.assign(p, makeParticle()); p.y = innerHeight + 10; }
+    if (p.x < -10) p.x = innerWidth + 10;
+    if (p.x > innerWidth + 10) p.x = -10;
+  });
+  requestAnimationFrame(animate);
 })();
 </script>
 </body>
